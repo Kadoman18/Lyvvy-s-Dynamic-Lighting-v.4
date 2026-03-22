@@ -1,5 +1,13 @@
 import { world, system } from "@minecraft/server";
 
+/**
+ * Maps item typeIds to their effective dynamic light level when held.
+ * Values generally follow vanilla block emission levels where applicable.
+ * Used to determine the brightness of the temporary light block placed near the player.
+ * Only items present in this map will produce light.
+ * Key: string (Minecraft item typeId)
+ * Value: number (light level 0–15)
+ */
 const LIGHT_ITEMS = new Map([
 	["minecraft:lantern", 15],
 	["minecraft:sea_lantern", 15],
@@ -10,11 +18,24 @@ const LIGHT_ITEMS = new Map([
 	["minecraft:ochre_froglight", 15],
 	["minecraft:verdant_froglight", 15],
 	["minecraft:pearlescent_froglight", 15],
-	["minecraft:lava", 15],
+	["minecraft:lava_bucket", 15],
 	["minecraft:campfire", 15],
+	["minecraft:copper_lantern", 15],
+	["minecraft:exposed_copper_lantern", 15],
+	["minecraft:weathered_copper_lantern", 15],
+	["minecraft:oxidized_copper_lantern", 15],
+	["minecraft:waxed_copper_lantern", 15],
+	["minecraft:waxed_exposed_copper_lantern", 15],
+	["minecraft:waxed_weathered_copper_lantern", 15],
+	["minecraft:waxed_oxidized_copper_lantern", 15],
+	["minecraft:copper_torch", 14],
 	["minecraft:torch", 14],
 	["minecraft:end_rod", 14],
 	["minecraft:glow_berries", 14],
+	["minecraft:blaze_rod", 12],
+	["minecraft:blaze_powder", 12],
+	["minecraft:nether_star", 12],
+	["minecraft:experience_bottle", 10],
 	["minecraft:soul_torch", 10],
 	["minecraft:soul_lantern", 10],
 	["minecraft:crying_obsidian", 10],
@@ -22,14 +43,19 @@ const LIGHT_ITEMS = new Map([
 	["minecraft:glow_lichen", 7],
 	["minecraft:enchanting_table", 7],
 	["minecraft:ender_chest", 7],
-	["minecraft:sea_pickle", 6],
+	["minecraft:ender_eye", 7],
+	["minecraft:redstone_torch", 7],
 	["minecraft:sculk_catalyst", 6],
 	["minecraft:glow_ink_sack", 6],
 	["minecraft:amethyst_cluster", 5],
+	["minecraft:ender_pearl", 5],
 	["minecraft:totem_of_undying", 5],
+	["minecraft:echo_shard", 4],
 	["minecraft:large_amethyst_bud", 4],
+	["minecraft:dragon_egg", 4],
 	["minecraft:magma", 3],
 	["minecraft:sculk_shrieker", 2],
+	["minecraft:fire_charge", 2],
 	["minecraft:medium_amethyst_bud", 2],
 	["minecraft:small_amethyst_bud", 1],
 	["minecraft:brown_mushroom", 1],
@@ -162,14 +188,14 @@ function setPlayerLights(player, positions) {
  * @param {import("@minecraft/server").Player} player
  */
 function performOffhandSwap(player) {
-	const inv = player.getComponent("minecraft:inventory")?.container;
+	const inventory = player.getComponent("minecraft:inventory")?.container;
 	const equip = player.getComponent("minecraft:equippable");
-	if (!inv || !equip) return;
+	if (!inventory || !equip) return;
 	const slot = player.selectedSlotIndex;
-	const itemInHand = inv.getItem(slot);
+	const itemInHand = inventory.getItem(slot);
 	if (!itemInHand || !LIGHT_ITEMS.has(itemInHand.typeId)) return;
 	system.run(() => {
-		const currentHand = inv.getItem(slot);
+		const currentHand = inventory.getItem(slot);
 		const offhandItem = equip.getEquipment("Offhand");
 		if (!currentHand) return;
 		const handSlot = "slot.weapon.mainhand";

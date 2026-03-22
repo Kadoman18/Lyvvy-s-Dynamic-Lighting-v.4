@@ -38,25 +38,25 @@
 		},
 		"permutations": [
 			{
-				"condition": "query.block_state('kado:light_level') == 0",
+				"condition": "q.block_state('kado:light_level') == 0",
 				"components": {
 					"minecraft:light_emission": 0
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 1",
+				"condition": "q.block_state('kado:light_level') == 1",
 				"components": {
 					"minecraft:light_emission": 1
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 2",
+				"condition": "q.block_state('kado:light_level') == 2",
 				"components": {
 					"minecraft:light_emission": 2
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 3",
+				"condition": "q.block_state('kado:light_level') == 3",
 				"components": {
 					"minecraft:light_emission": 3
 				}
@@ -68,67 +68,67 @@
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 5",
+				"condition": "q.block_state('kado:light_level') == 5",
 				"components": {
 					"minecraft:light_emission": 5
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 6",
+				"condition": "q.block_state('kado:light_level') == 6",
 				"components": {
 					"minecraft:light_emission": 6
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 7",
+				"condition": "q.block_state('kado:light_level') == 7",
 				"components": {
 					"minecraft:light_emission": 7
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 8",
+				"condition": "q.block_state('kado:light_level') == 8",
 				"components": {
 					"minecraft:light_emission": 8
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 9",
+				"condition": "q.block_state('kado:light_level') == 9",
 				"components": {
 					"minecraft:light_emission": 9
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 10",
+				"condition": "q.block_state('kado:light_level') == 10",
 				"components": {
 					"minecraft:light_emission": 10
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 11",
+				"condition": "q.block_state('kado:light_level') == 11",
 				"components": {
 					"minecraft:light_emission": 11
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 12",
+				"condition": "q.block_state('kado:light_level') == 12",
 				"components": {
 					"minecraft:light_emission": 12
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 13",
+				"condition": "q.block_state('kado:light_level') == 13",
 				"components": {
 					"minecraft:light_emission": 13
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 14",
+				"condition": "q.block_state('kado:light_level') == 14",
 				"components": {
 					"minecraft:light_emission": 14
 				}
 			},
 			{
-				"condition": "query.block_state('kado:light_level') == 15",
+				"condition": "q.block_state('kado:light_level') == 15",
 				"components": {
 					"minecraft:light_emission": 15
 				}
