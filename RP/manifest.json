@@ -1,0 +1,25 @@
+{
+	"format_version": 2,
+	"header": {
+		"min_engine_version": [1, 21, 0],
+		"name": "Lyvvy's Dynamic Lighting (RP)",
+		"description": "Adds Dynamic Lighting to Bedrock.",
+		"uuid": "cf9ae792-549b-4c70-ac12-f6038848acf4",
+		"version": [1, 0, 0]
+	},
+	"modules": [
+		{
+			"type": "resources",
+			"description": "First Iteration.",
+			"uuid": "1123819b-8bd2-4f58-905a-e77cb0bc6ad1",
+			"version": [1, 0, 0]
+		}
+	],
+	"dependencies": [
+		{
+			"uuid": "8fd1bd40-772e-4030-99d1-0a154d80b05b",
+			"version": [1, 0, 0]
+		}
+	],
+	"metadata": { "authors": ["Kadoman18"] }
+}

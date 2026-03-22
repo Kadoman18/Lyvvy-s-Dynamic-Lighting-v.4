@@ -1,0 +1,11 @@
+{
+	"resource_pack_name": "Lyvvy's Dynamic Lighting",
+	"texture_name": "atlas.terrain",
+	"num_mip_levels": 4,
+	"padding": 8,
+	"texture_data": {
+		"empty": {
+			"textures": "textures/blocks/empty"
+		}
+	}
+}
