@@ -1,4 +1,4 @@
-import { world, system } from "@minecraft/server";
+import { world, system, Player } from "@minecraft/server";
 
 /**
  * Maps item typeIds to their effective dynamic light level when held.
@@ -113,11 +113,30 @@ function getOffhandItem(player) {
  * @returns {import("@minecraft/server").Vector3}
  */
 function getHeadBlockPos(player) {
+	// Crawling logic override
+	if (isCrawling(player)) {
+		return {
+			x: Math.floor(player.location.x),
+			y: Math.floor(player.location.y),
+			z: Math.floor(player.location.z),
+		};
+	}
+
+	// Normal standing logic (unchanged)
 	return {
 		x: Math.floor(player.location.x),
-		y: Math.floor(player.location.y + 1.62),
+		y: Math.floor(player.location.y + 1),
 		z: Math.floor(player.location.z),
 	};
+}
+
+/**
+ * @param {Player} player
+ * @returns {boolean}
+ */
+function isCrawling(player) {
+	const distance = player.getHeadLocation().y - player.location.y;
+	return distance < 0.31 && !player.isSwimming && !player.isGliding && !player.isSleeping;
 }
 
 /**
@@ -276,9 +295,29 @@ system.runInterval(() => {
 			setPlayerLights(player, [headPos]);
 			continue;
 		}
+		// NEW: vertical fallback (above head + below feet)
+		const aboveHead = { x: headPos.x, y: headPos.y + 1, z: headPos.z };
+		const atFeet = { x: headPos.x, y: headPos.y - 1, z: headPos.z };
+		// Handle 15 cap
+		let topLevel = level;
+		let bottomLevel = Math.max(0, level - 1);
+		if (level === 15) {
+			topLevel = 15;
+			bottomLevel = 14;
+		}
+		const placed = [];
+		// Prefer placing below feet first
+		if (tryPlaceLight(dimension, atFeet, bottomLevel)) {
+			setPlayerLights(player, [atFeet]);
+			continue;
+		}
+		// Fallback to above head
+		if (tryPlaceLight(dimension, aboveHead, topLevel)) {
+			setPlayerLights(player, [aboveHead]);
+			continue;
+		}
 		const reducedLevel = Math.max(0, level - 1);
 		const adjacent = getAdjacentPositions(headPos);
-		const placed = [];
 		for (const pos of adjacent) {
 			if (tryPlaceLight(dimension, pos, reducedLevel)) {
 				placed.push(pos);
@@ -287,3 +326,23 @@ system.runInterval(() => {
 		setPlayerLights(player, placed);
 	}
 }, 1);
+
+world.afterEvents.playerLeave.subscribe((eventData) => {
+	const { playerId } = eventData;
+	const positions = playerLightMap.get(playerId);
+	if (!positions) return;
+	const dimensionIds = ["overworld", "nether", "the_end"];
+	// Try all dimensions since we no longer have the player reference
+	for (const dimensionId in dimensionIds) {
+		const dimension = world.getDimension(dimensionId);
+		for (const pos of positions) {
+			const block = dimension.getBlock(pos);
+			if (block && block.typeId === "kado:light_block") {
+				dimension.setBlockType(pos, block.isWaterlogged ? "minecraft:water" : "minecraft:air");
+			}
+		}
+	}
+	playerLightMap.delete(playerId);
+	lastUseMap.delete(playerId);
+	swapCooldownMap.delete(playerId);
+});
