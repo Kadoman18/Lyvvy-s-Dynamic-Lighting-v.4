@@ -76,7 +76,8 @@ function blockIsFillable(dimension, pos) {
 	return (
 		blockId === "minecraft:air" ||
 		blockId === "minecraft:water" ||
-		blockId === "minecraft:flowing_water"
+		blockId === "minecraft:flowing_water" ||
+		blockId === "kado:light_block"
 	);
 }
 
