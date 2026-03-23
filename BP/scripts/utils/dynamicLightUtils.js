@@ -10,6 +10,7 @@ export function getMainhandItem(player) {
 	const item = inventory.getItem(player.selectedSlotIndex);
 	return item ?? undefined;
 }
+
 /**
  * @param {import("@minecraft/server").Player} player
  * @returns {import("@minecraft/server").ItemStack | undefined}
@@ -19,6 +20,7 @@ export function getOffhandItem(player) {
 	const item = equippable?.getEquipment("Offhand");
 	return item ?? undefined;
 }
+
 /**
  * @param {import("@minecraft/server").Player} player
  * @returns {import("@minecraft/server").Vector3}
@@ -40,6 +42,7 @@ export function getHeadBlockPos(player) {
 		z: Math.floor(player.location.z),
 	};
 }
+
 /**
  * @param {Player} player
  * @returns {boolean}
@@ -48,6 +51,7 @@ function isCrawling(player) {
 	const distance = player.getHeadLocation().y - player.location.y;
 	return distance < 0.31 && !player.isSwimming && !player.isGliding && !player.isSleeping;
 }
+
 /**
  * @param {import("@minecraft/server").Dimension} dimension
  * @param {import("@minecraft/server").Vector3} pos
@@ -61,6 +65,7 @@ export function tryPlaceLight(dimension, pos, level) {
 	block.setPermutation(block.permutation.withState("kado:light_level", level));
 	return true;
 }
+
 /**
  * @param {import("@minecraft/server").Dimension} dimension
  * @param {import("@minecraft/server").Vector3} pos
@@ -74,6 +79,7 @@ function blockIsFillable(dimension, pos) {
 		blockId === "minecraft:flowing_water"
 	);
 }
+
 /**
  * @param {import("@minecraft/server").Vector3} center
  * @returns {import("@minecraft/server").Vector3[]}
@@ -86,6 +92,7 @@ export function getAdjacentPositions(center) {
 		{ x: center.x, y: center.y, z: center.z - 1 },
 	];
 }
+
 /**
  * @param {import("@minecraft/server").Player} player
  * @param {import("@minecraft/server").Dimension} dimension
@@ -100,6 +107,7 @@ export function removePlayerLights(player, dimension) {
 		}
 	}
 }
+
 /**
  * @param {import("@minecraft/server").Player} player
  * @param {import("@minecraft/server").Vector3[]} positions
@@ -107,6 +115,7 @@ export function removePlayerLights(player, dimension) {
 export function setPlayerLights(player, positions) {
 	playerLightMap.set(player.id, positions);
 }
+
 /**
  * @param {import("@minecraft/server").Player} player
  */
@@ -151,7 +160,6 @@ export function performOffhandSwap(player) {
 				);
 			}
 		}
-
 		player.playSound("random.pop");
 	});
 }

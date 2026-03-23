@@ -1,12 +1,9 @@
 /**
  * Maps item typeIds to their effective dynamic light level when held.
- * Values generally follow vanilla block emission levels where applicable.
- * Used to determine the brightness of the temporary light block placed near the player.
- * Only items present in this map will produce light.
- * Key: string (Minecraft item typeId)
- * Value: number (light level 0–15)
+ * Only items present in this map will produce light and allow offhand switching.
+ * Key: string (typeId)
+ * Value: number (0–15)
  */
-
 export const LIGHT_ITEMS = new Map([
 	["minecraft:lantern", 15],
 	["minecraft:sea_lantern", 15],
@@ -60,24 +57,31 @@ export const LIGHT_ITEMS = new Map([
 	["minecraft:brown_mushroom", 1],
 	["minecraft:sculk_sensor", 1],
 ]);
+
 /**
  * Tracks previously placed light positions per player
  * key: player.id
  * value: Vector3[]
  */
-
 export const playerLightMap = new Map();
+
 /**
  * Tracks last use tick per player for double-click detection
  * key: player.id
  * value: tick number
  */
-
 export const lastUseMap = new Map();
+
+/**
+ * Tracks the last known block position of each player.
+ * key: player.id
+ * value: Vector3
+ */
+export const playerLastPos = new Map(); // playerId -> Vector3
+
 /**
  * Cooldown to prevent rapid swapping
  * key: player.id
  * value: tick number
  */
-
 export const swapCooldownMap = new Map();

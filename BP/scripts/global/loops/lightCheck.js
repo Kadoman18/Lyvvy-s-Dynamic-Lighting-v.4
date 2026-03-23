@@ -8,7 +8,7 @@ import {
 	setPlayerLights,
 	getAdjacentPositions,
 } from "../../utils/dynamicLightUtils";
-import { LIGHT_ITEMS, playerLightMap } from "../constants";
+import { LIGHT_ITEMS, playerLightMap, playerLastPos } from "../constants";
 
 system.runInterval(() => {
 	for (const player of world.getPlayers()) {
@@ -24,33 +24,39 @@ system.runInterval(() => {
 			continue;
 		}
 		const headPos = getHeadBlockPos(player);
+		const prevPos = playerLastPos.get(player.id);
+		if (
+			prevPos &&
+			prevPos.x === headPos.x &&
+			prevPos.y === headPos.y &&
+			prevPos.z === headPos.z
+		) {
+			continue;
+		}
+		// update position AFTER movement detected
+		playerLastPos.set(player.id, headPos);
 		removePlayerLights(player, dimension);
+		// Place at head
 		if (tryPlaceLight(dimension, headPos, level)) {
 			setPlayerLights(player, [headPos]);
 			continue;
 		}
-		// NEW: vertical fallback (above head + below feet)
+		// Vertical placement
 		const aboveHead = { x: headPos.x, y: headPos.y + 1, z: headPos.z };
 		const atFeet = { x: headPos.x, y: headPos.y - 1, z: headPos.z };
-		// Handle 15 cap
-		let topLevel = level;
-		let bottomLevel = Math.max(0, level - 1);
-		if (level === 15) {
-			topLevel = 15;
-			bottomLevel = 14;
-		}
+		let increasedLevel = Math.min(15, level + 1);
+		let reducedLevel = Math.max(0, level - 1);
 		const placed = [];
-		// Prefer placing below feet first
-		if (tryPlaceLight(dimension, atFeet, bottomLevel)) {
+		// Place at feet
+		if (tryPlaceLight(dimension, atFeet, reducedLevel)) {
 			setPlayerLights(player, [atFeet]);
 			continue;
 		}
-		// Fallback to above head
-		if (tryPlaceLight(dimension, aboveHead, topLevel)) {
+		// Place above
+		if (tryPlaceLight(dimension, aboveHead, increasedLevel)) {
 			setPlayerLights(player, [aboveHead]);
 			continue;
 		}
-		const reducedLevel = Math.max(0, level - 1);
 		const adjacent = getAdjacentPositions(headPos);
 		for (const pos of adjacent) {
 			if (tryPlaceLight(dimension, pos, reducedLevel)) {

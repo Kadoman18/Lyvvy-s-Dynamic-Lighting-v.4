@@ -3,7 +3,7 @@ import { playerLightMap, lastUseMap, swapCooldownMap } from "../../global/consta
 
 world.beforeEvents.playerLeave.subscribe((eventData) => {
 	const { player } = eventData;
-	const positions = playerLightMap.get(player);
+	const positions = playerLightMap.get(player.id);
 	if (!positions) return;
 	const dimensionIds = ["overworld", "nether", "the_end"];
 	// Try all dimensions since we no longer have the player reference
@@ -16,7 +16,8 @@ world.beforeEvents.playerLeave.subscribe((eventData) => {
 			}
 		}
 	}
-	playerLightMap.delete(player);
-	lastUseMap.delete(player);
-	swapCooldownMap.delete(player);
+        playerLightMap.delete(player.id);
+        playerLastPos.delete(player.id);
+	lastUseMap.delete(player.id);
+	swapCooldownMap.delete(player.id);
 });
