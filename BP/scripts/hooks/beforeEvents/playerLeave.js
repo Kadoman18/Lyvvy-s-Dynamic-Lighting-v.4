@@ -1,23 +1,16 @@
 import { world } from "@minecraft/server";
-import { playerLightMap, lastUseMap, swapCooldownMap } from "../../global/constants";
+import { playerLightState } from "../../global/constants";
 
 world.beforeEvents.playerLeave.subscribe((eventData) => {
 	const { player } = eventData;
-	const positions = playerLightMap.get(player.id);
-	if (!positions) return;
-	const dimensionIds = ["overworld", "nether", "the_end"];
-	// Try all dimensions since we no longer have the player reference
-	for (const dimensionId in dimensionIds) {
-		const dimension = world.getDimension(dimensionId);
-		for (const pos of positions) {
-			const block = dimension.getBlock(pos);
-			if (block && block.typeId === "kado:light_block") {
-				dimension.setBlockType(pos, block.isWaterlogged ? "minecraft:water" : "minecraft:air");
-			}
-		}
+	const state = playerLightState.get(player.id);
+	if (!state) return;
+	for (const entry of state.lights) {
+		const dimension = world.getDimension(entry.dimensionId);
+		if (!dimension) continue;
+		const block = dimension.getBlock(entry.pos);
+		if (!block || block.typeId !== "kado:light_block") continue;
+		dimension.setBlockPermutation(entry.pos, entry.permutation);
 	}
-        playerLightMap.delete(player.id);
-        playerLastPos.delete(player.id);
-	lastUseMap.delete(player.id);
-	swapCooldownMap.delete(player.id);
+	playerLightState.delete(player.id);
 });

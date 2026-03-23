@@ -78,6 +78,7 @@ export function tryPlaceLight(dimension, pos, level) {
 	// Capture original state
 	const original = {
 		pos,
+		dimensionId: dimension.id,
 		typeId: block.typeId,
 		permutation: block.permutation,
 	};
