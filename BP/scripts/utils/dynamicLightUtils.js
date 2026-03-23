@@ -1,5 +1,19 @@
 import { system } from "@minecraft/server";
-import { playerLightMap, LIGHT_ITEMS } from "../global/constants";
+import { LIGHT_ITEMS, playerLightState } from "../global/constants";
+
+export function getPlayerState(player) {
+	let state = playerLightState.get(player.id);
+	if (!state) {
+		state = {
+			lights: [],
+			lastPos: undefined,
+			lastUseTick: undefined,
+			swapCooldown: undefined,
+		};
+		playerLightState.set(player.id, state);
+	}
+	return state;
+}
 
 /**
  * @param {import("@minecraft/server").Player} player
@@ -59,25 +73,31 @@ function isCrawling(player) {
  * @returns {boolean}
  */
 export function tryPlaceLight(dimension, pos, level) {
-	if (!blockIsFillable(dimension, pos)) return false;
-	dimension.setBlockType(pos, "kado:light_block");
 	const block = dimension.getBlock(pos);
-	block.setPermutation(block.permutation.withState("kado:light_level", level));
-	return true;
+	if (!blockIsFillable(block)) return undefined;
+	// Capture original state
+	const original = {
+		pos,
+		typeId: block.typeId,
+		permutation: block.permutation,
+	};
+	dimension.setBlockType(pos, "kado:light_block");
+	const newBlock = dimension.getBlock(pos);
+	newBlock.setPermutation(newBlock.permutation.withState("kado:light_level", level));
+	return original;
 }
 
 /**
- * @param {import("@minecraft/server").Dimension} dimension
- * @param {import("@minecraft/server").Vector3} pos
+ * @param {import("@minecraft/server").Block} block
  * @returns {boolean}
  */
-function blockIsFillable(dimension, pos) {
-	const blockId = dimension.getBlock(pos).typeId;
+function blockIsFillable(block) {
+	const id = block.typeId;
 	return (
-		blockId === "minecraft:air" ||
-		blockId === "minecraft:water" ||
-		blockId === "minecraft:flowing_water" ||
-		blockId === "kado:light_block"
+		id === "minecraft:air" ||
+		id === "minecraft:water" ||
+		id === "minecraft:flowing_water" ||
+		id === "kado:light_block"
 	);
 }
 
@@ -98,23 +118,15 @@ export function getAdjacentPositions(center) {
  * @param {import("@minecraft/server").Player} player
  * @param {import("@minecraft/server").Dimension} dimension
  */
-export function removePlayerLights(player, dimension) {
-	const prev = playerLightMap.get(player.id);
-	if (!prev) return;
-	for (const pos of prev) {
-		const block = dimension.getBlock(pos);
-		if (block.typeId === "kado:light_block") {
-			dimension.setBlockType(pos, block.isWaterlogged ? "minecraft:water" : "minecraft:air");
-		}
+export function removePlayerLights(player, dimension, state) {
+	if (!state?.lights?.length) return;
+	for (const entry of state.lights) {
+		const block = dimension.getBlock(entry.pos);
+		if (block.typeId !== "kado:light_block") continue;
+		dimension.setBlockType(entry.pos, entry.typeId);
+		const restored = dimension.getBlock(entry.pos);
+		restored.setPermutation(entry.permutation);
 	}
-}
-
-/**
- * @param {import("@minecraft/server").Player} player
- * @param {import("@minecraft/server").Vector3[]} positions
- */
-export function setPlayerLights(player, positions) {
-	playerLightMap.set(player.id, positions);
 }
 
 /**

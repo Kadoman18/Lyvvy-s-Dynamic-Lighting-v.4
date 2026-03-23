@@ -59,29 +59,14 @@ export const LIGHT_ITEMS = new Map([
 ]);
 
 /**
- * Tracks previously placed light positions per player
- * key: player.id
- * value: Vector3[]
+ * @typedef {Object} LightBlockEntry
+ * @property {import("@minecraft/server").Vector3} pos
+ * @property {string} typeId
+ * @property {import("@minecraft/server").BlockPermutation} permutation
  */
-export const playerLightMap = new Map();
 
 /**
- * Tracks last use tick per player for double-click detection
+ * Unified player light state
  * key: player.id
- * value: tick number
  */
-export const lastUseMap = new Map();
-
-/**
- * Tracks the last known block position of each player.
- * key: player.id
- * value: Vector3
- */
-export const playerLastPos = new Map(); // playerId -> Vector3
-
-/**
- * Cooldown to prevent rapid swapping
- * key: player.id
- * value: tick number
- */
-export const swapCooldownMap = new Map();
+export const playerLightState = new Map();
