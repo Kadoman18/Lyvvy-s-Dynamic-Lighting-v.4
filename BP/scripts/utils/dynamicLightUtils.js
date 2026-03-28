@@ -93,12 +93,9 @@ export function tryPlaceLight(dimension, pos, level) {
  * @returns {boolean}
  */
 function blockIsFillable(block) {
-	const id = block.typeId;
 	return (
-		id === "minecraft:air" ||
-		id === "minecraft:water" ||
-		id === "minecraft:flowing_water" ||
-		id === "kado:light_block"
+		block.typeId === "minecraft:air" ||
+		(block.typeId === "minecraft:water" && block.permutation.getState("liquid_depth") === 0)
 	);
 }
 
