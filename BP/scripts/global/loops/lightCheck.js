@@ -6,7 +6,8 @@ import {
 	getHeadBlockPos,
         tryPlaceLight,
         getPlayerState,
-	getAdjacentPositions,
+        getAdjacentPositions,
+        cleanupNearbyLights
 } from "../../utils/dynamicLightUtils";
 import { LIGHT_ITEMS } from "../constants";
 
@@ -36,7 +37,14 @@ system.runInterval(() => {
 		) {
 			continue;
 		}
-		// Update position AFTER movement detected
+		// 1. Clean up orphaned lights near previous position (handles reload issues)
+		if (prevPos) {
+			cleanupNearbyLights(dimension, prevPos, 2);
+		}
+		// 2. Remove tracked lights (normal cleanup)
+		removePlayerLights(player, dimension, state);
+		state.lights = [];
+		// 3. Update stored position AFTER cleanup
 		state.lastPos = headPos;
 		// Remove previous lights
 		removePlayerLights(player, dimension, state);

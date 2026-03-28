@@ -128,6 +128,35 @@ export function removePlayerLights(player, dimension, state) {
 }
 
 /**
+ * Removes any dynamic light blocks in a small radius
+ * @param {Dimension} dimension
+ * @param {Vector3} center
+ * @param {number} radius
+ */
+export function cleanupNearbyLights(dimension, center, radius = 2) {
+        for (let x = -radius; x <= radius; x++) {
+                for (let y = -radius; y <= radius; y++) {
+                        for (let z = -radius; z <= radius; z++) {
+                                const pos = {
+                                        x: center.x + x,
+                                        y: center.y + y,
+                                        z: center.z + z,
+                                };
+
+                                const block = dimension.getBlock(pos);
+                                if (!block) continue;
+
+                                if (block.typeId === "kado:light_block") {
+                                        const waterlogged = block.permutation.getState("minecraft:waterlogged")
+                                        // Replace with air (or better: default fallback)
+                                        dimension.setBlockType(pos, waterlogged ? "minecraft:flowing_water" : "minecraft:air");
+                                }
+                        }
+                }
+        }
+}
+
+/**
  * @param {import("@minecraft/server").Player} player
  */
 export function performOffhandSwap(player) {
